@@ -1,7 +1,7 @@
 require('dotenv').config();
+require('./routes/main.js');
 const express = require("express");
 const app = express();
-const { userRouter } = require('./routes/main.js');
 const { sequelize } = require("./models");
 const { PORT } = require("./config/config.js");
 const bodyParser = require("body-parser");
@@ -16,7 +16,7 @@ sequelize.sync({ force: false })
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'uploads/images')));
-app.use(userRouter);
+
 app.get("/", (req, res) => { res.status(200).send("Project Management System") })
 
 

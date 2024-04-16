@@ -1,6 +1,3 @@
 const userRouter = require('../routes/user.routes');
+const projectRouter = require('../routes/')
 
-
-module.exports = {
-    userRouter
-}
