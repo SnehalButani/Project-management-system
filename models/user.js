@@ -1,13 +1,13 @@
 const { Model } = require('sequelize');
-const {  hash } = require('bcrypt');
-const {saltRounds} = require('../config/config');
+const { hashSync, genSaltSync } = require('bcrypt');
+const { saltRounds } = require('../config/config');
 
 module.exports = (sequelize, DataTypes) => {
 
   class User extends Model {
     static associate(models) {
       User.belongsTo(models.Role, { as: 'role', foreignKey: 'role_id' }),
-      User.hasMany(models.Project, { as: 'user', foreignKey: 'user_id' })
+        User.hasMany(models.Project, { as: 'user', foreignKey: 'user_id' })
     }
   }
 
@@ -39,16 +39,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: { notNull: { msg: "password is required" } },
       set(value) {
-        this.setDataValue('password', hash(value));
+        this.setDataValue('password', hashSync(value.toString(), genSaltSync(12)));
       }
     },
     otp: {
       type: DataTypes.STRING,
       trim: true,
       allowNull: false,
-      validate: { notNull: { msg: "password is required" } },
+      validate: { notNull: { msg: "otp is required" } },
       set(value) {
-        this.setDataValue('otp', hash(value))
+        this.setDataValue('otp', hashSync(value.toString(), genSaltSync(saltRounds)))
       }
     },
     otpExpire: {
@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     verify: {
       type: DataTypes.BOOLEAN,
-      defaultValue:false
+      defaultValue: false
     }
   }, {
     sequelize,
