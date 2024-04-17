@@ -2,15 +2,17 @@ const { verify } = require("jsonwebtoken");
 const { PrivateKey } = require("../config/config");
 
 function verifyjwt(req, res, next) {
-    const token = req.headers['authorization'].split(" ")[1];
-   
+    let token = req.headers['authorization']
     if (!token) return res.status(401).json({ error: true, message: 'Unauthorize user' })
 
     try {
+        token = token.split(" ")[1];
         const decoded = verify(token, PrivateKey);
         req.user = decoded
+
         next()
     } catch (error) {
+        error.message = "invalid token";
         next(error)
     }
 }

@@ -22,7 +22,7 @@ module.exports = {
         desc: 'Description of Project 2',
         budget: '15000',
         priority: 'Medium',
-        status: 'blocked',
+        status: 'cancel',
         createdAt: new Date(),
         updatedAt: new Date()
       }
