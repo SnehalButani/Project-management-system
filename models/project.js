@@ -17,13 +17,13 @@ module.exports = (sequelize, DataTypes) => {
       validate: { notNull: { msg: "project name is required" } }
     },
     start_date: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
       trim: true,
       allowNull: false,
       validate: { notNull: { msg: "start_date is required" } }
     },
     end_date: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
       trim: true,
       allowNull: false
     },
