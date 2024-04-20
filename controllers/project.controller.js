@@ -1,10 +1,12 @@
-const { Project } = require("../models");
+const { Project, User, Permission } = require("../models");
 const _ = require("lodash");
+const { sendInvitePeople } = require("../utils/nodemailer");
 
 module.exports = {
     addProject,
     editProject,
-    removeProject
+    removeProject,
+    invitePeople
 }
 
 async function addProject(req, res, next) {
@@ -52,3 +54,31 @@ async function removeProject(req, res, next) {
         next(error)
     }
 }
+
+async function invitePeople(req, res, next) {
+    try {
+
+        const { email, roleId } = req.body;
+
+        const password = generateOTP();
+
+        const user = await User.create({ ...req.body, password: password, role_id: roleId });
+
+        await sendInvitePeople({ email, password: password }, res)
+            .then(() => {
+                return res.status(200).json({
+                    error: false,
+                    message: "send invite email successfully"
+                })
+            }).catch(() => {
+                res.status(400).json({
+                    error: false,
+                    message: "Invitation sending email is failed"
+                })
+            })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
