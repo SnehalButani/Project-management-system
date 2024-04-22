@@ -13,7 +13,8 @@ module.exports = {
         priority: 'High',
         status: 'pending',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        user_id:1
       },
       {
         Pro_name: 'Project 2',
@@ -24,7 +25,8 @@ module.exports = {
         priority: 'Medium',
         status: 'cancel',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        user_id:1
       }
     ]);
   },

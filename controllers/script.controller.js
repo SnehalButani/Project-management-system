@@ -4,7 +4,8 @@ const _ = require("lodash");
 module.exports = {
     addScript,
     editScript,
-    removeScript
+    removeScript,
+    getAllScript
 }
 
 async function addScript(req, res, next) {
@@ -45,6 +46,21 @@ async function removeScript(req, res, next) {
             message: "Script delete successfully"
         });
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function getAllScript(req, res, next) {
+    try {
+        const data = await sequelize.query(`SELECT * FROM "Scripts"`, {
+            type: QueryTypes.SELECT
+        });
+
+        res.status(200).json({
+            error: false,
+            data: data
+        })
     } catch (error) {
         next(error)
     }

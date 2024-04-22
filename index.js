@@ -11,9 +11,6 @@ const path = require("path");
 
 sequelize.sync({ force: false })
     .then(async () => {
-
-        // RLS implement on scripts table
-        await sequelize.query(`ALTER TABLE "Scripts" ENABLE ROW LEVEL SECURITY`)
         console.log("DB connected");
 
     }).catch((error) => console.log("------------------ DB connection error ------------------", error));

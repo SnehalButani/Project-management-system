@@ -5,14 +5,14 @@ const _ = require("lodash");
 const { generateOTP } = require("../utils/randomNo");
 const { compare } = require("bcrypt");
 const fs = require("fs");
-const permission = require("../models/permission");
+const { QueryTypes } = require('sequelize');
+const { reduceData } = require("../utils/helper");
 
 
 
 module.exports = {
-    signUp, signIn, verifyOtp, editUser, removeUser, createRole, getPermissionViseRole, getUservisePermission
+    signUp, signIn, verifyOtp, editUser, removeUser, createRole, getPermissionViseRole, getUservisePermission, getAllProjectViseMember
 }
-
 
 async function signUp(req, res, next) {
     try {
@@ -166,7 +166,6 @@ async function removeUser(req, res, next) {
     }
 }
 
-
 async function createRole(req, res, next) {
     try {
 
@@ -230,23 +229,37 @@ async function getUservisePermission(req, res, next) {
     try {
         const data = await sequelize.query(`
         SELECT u."firstName", u."lastName",r.name AS role,p.permission FROM "Users" as u JOIN "Roles" as r ON r.id = u.role_id 
-        JOIN "RolePermission" ON "RolePermission"."RoleId" = r.id JOIN "Permissions" AS p ON "RolePermission"."PermissionId" = p.id`);
+        JOIN "RolePermission" ON "RolePermission"."RoleId" = r.id JOIN "Permissions" AS p ON "RolePermission"."PermissionId" = p.id`, {
+            type: QueryTypes.SELECT
+        });
 
-        const combinedData = data[0].reduce((acc, curr) => {
-            const key = `${curr.firstName}_${curr.lastName}_${curr.role}`;
-            if (!acc[key]) {
-                acc[key] = { firstName: curr.firstName, lastName: curr.lastName, role: curr.role, permission: [curr.permission] };
-            } else {
-                acc[key].permission.push(curr.permission);
-            }
-            return acc;
-        }, {});
-
-        const finalArray = Object.values(combinedData);
+        const combinedData = reduceData(data)
 
         res.status(200).json({
             error: false,
-            data: finalArray
+            data: combinedData
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function getAllProjectViseMember(req, res, next) {
+    try {
+        const data = await sequelize.query(`SELECT u."firstName", u."lastName", r.name AS role, p.permission
+        FROM "Users" AS u
+        JOIN "ProjectMembers" AS pm ON pm."userId" = u.id
+        JOIN "Roles" AS r ON pm."roleId" = r.id
+        JOIN "RolePermission" ON "RolePermission"."RoleId" = r.id 
+        JOIN "Permissions" AS p ON "RolePermission"."PermissionId" = p.id`, {
+            type: QueryTypes.SELECT
+        });
+
+        const combinedData = reduceData(data)
+
+        res.status(200).json({
+            error: false,
+            data: combinedData
         })
     } catch (error) {
         next(error)

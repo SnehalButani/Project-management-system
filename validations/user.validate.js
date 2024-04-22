@@ -65,7 +65,7 @@ const signUpvalidation = checkSchema({
 const signInvalidation = [
     body('email', 'email is required').notEmpty(),
     body('email', 'Invalid email').isEmail().bail(),
-    body('password', 'password does not Empty').not().isEmpty().isStrongPassword(),
+    body('password', 'password does not Empty').notEmpty(),
 ]
 
 module.exports = {

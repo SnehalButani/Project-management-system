@@ -459,8 +459,9 @@ const sendInvitePeople = async ({ email, password }, res) => {
                         <tr>
                           <td class="content-cell">
                             <div class="f-fallback">
-                              <h1>Admin invited you to join them in HMR techology</h1>
+                              <h1>Owner invited you to join them in HMR techology</h1>
                               <p>Start planning and tracking work with Admin and your team. You can share your work and view what your team is doing.
+                              To log in, use your email ${email} and the password you've provided: ${password}.
                               </p>
                               <!-- Action -->
                               <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
@@ -468,9 +469,12 @@ const sendInvitePeople = async ({ email, password }, res) => {
                                   <td align="center">
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
                                       <tr>
-                                        <td align="center">
-                                          <a href="{{action_url}}" style="color: #FFF;" class="f-fallback button" target="_blank">Join the COVID-19 Cognitive City</a>
-                                        </td>
+                                      <td align="center">
+                                      <a href="{{action_url}}" style="color: #FFF;" class="f-fallback button" target="_blank">Accept</a>
+                                    </td>
+                                    <td align="center">
+                                      <a href="{{action_url}}" style="color: #FFF;" class="f-fallback button" target="_blank">Reject</a>
+                                    </td>
                                       </tr>
                                     </table>
                                   </td>

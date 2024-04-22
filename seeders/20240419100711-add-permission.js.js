@@ -4,18 +4,14 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     return queryInterface.bulkInsert('Permissions', [
-      { permission: "create", createdAt: new Date(), updatedAt: new Date() },
-      { permission: "edit", createdAt: new Date(), updatedAt: new Date() },
+      { permission: "insert", createdAt: new Date(), updatedAt: new Date() },
+      { permission: "update", createdAt: new Date(), updatedAt: new Date() },
       { permission: "delete", createdAt: new Date(), updatedAt: new Date() },
+      { permission: "select", createdAt: new Date(), updatedAt: new Date() },
     ])
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+   return queryInterface.bulkDelete('Permissions',null,{});
   }
 };

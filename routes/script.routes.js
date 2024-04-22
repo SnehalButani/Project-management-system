@@ -1,12 +1,13 @@
 const express = require('express');
 const { verifyjwt } = require('../middlewares/jwtVerify');
-const { addScript, editScript, removeScript } = require('../controllers/script.controller');
+const { addScript, editScript, removeScript, getAllScript } = require('../controllers/script.controller');
 const { scriptValidate, editScriptValidate } = require('../validations/script.validate');
+const { checkRole, checkPermission } = require('../middlewares/checkPermission');
 const router = express.Router();
 
-
-router.post("/addscript", verifyjwt, scriptValidate, addScript);
-router.put("/editscript", verifyjwt, editScriptValidate, editScript);
-router.delete("/rmscript", verifyjwt, removeScript);
+router.get("/allscript",verifyjwt,getAllScript);
+router.post("/addscript", verifyjwt, scriptValidate, checkPermission('create'), addScript);
+router.put("/editscript", verifyjwt, editScriptValidate, checkPermission('edit'), editScript);
+router.delete("/rmscript", verifyjwt, checkPermission('delete'), removeScript);
 
 module.exports = router;    

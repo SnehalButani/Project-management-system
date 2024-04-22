@@ -1,12 +1,16 @@
-const { Project, User, Permission } = require("../models");
+const { Project, User, Permission, sequelize,ProjectMember } = require("../models");
+const { QueryTypes } = require('sequelize');
 const _ = require("lodash");
 const { sendInvitePeople } = require("../utils/nodemailer");
+const { generateOTP } = require("../utils/randomNo");
+const { getFirstNameFromEmail } = require("../utils/helper");
 
 module.exports = {
     addProject,
     editProject,
     removeProject,
-    invitePeople
+    invitePeople,
+    getAllProject
 }
 
 async function addProject(req, res, next) {
@@ -58,13 +62,16 @@ async function removeProject(req, res, next) {
 async function invitePeople(req, res, next) {
     try {
 
-        const { email, roleId } = req.body;
+        const { email, roleId, projectId } = req.body;
 
         const password = generateOTP();
 
-        const user = await User.create({ ...req.body, password: password, role_id: roleId });
 
-        await sendInvitePeople({ email, password: password }, res)
+        const user = await User.create({ email: email, password: password, role_id: roleId });
+
+        await ProjectMember.create({ ...req.body, userId: user.id });
+
+        await sendInvitePeople({ email, password }, res)
             .then(() => {
                 return res.status(200).json({
                     error: false,
@@ -82,3 +89,17 @@ async function invitePeople(req, res, next) {
     }
 }
 
+async function getAllProject(req, res, next) {
+    try {
+        const data = await sequelize.query(`SELECT * FROM "Projects"`, {
+            type: QueryTypes.SELECT
+        });
+
+        res.status(200).json({
+            error: false,
+            data: data
+        })
+    } catch (error) {
+        next(error)
+    }
+}

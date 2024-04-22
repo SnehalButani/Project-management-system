@@ -11,7 +11,8 @@ module.exports = {
         end_date: '2022-02-01',
         status: 'pending',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        project_id:1
       },
       {
         title: 'Project 2',
@@ -20,7 +21,8 @@ module.exports = {
         end_date: '2022-02-01',
         status: 'blocked',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        project_id:1
       }
     ])
   },

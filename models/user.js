@@ -15,14 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     firstName: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "firstname is required" } }
+      allowNull: true
     },
     lastName: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "lastname is required" } }
+      allowNull:true
     },
     email: {
       type: DataTypes.STRING,
@@ -45,8 +43,7 @@ module.exports = (sequelize, DataTypes) => {
     otp: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "otp is required" } },
+      allowNull: true,
       set(value) {
         this.setDataValue('otp', hashSync(value.toString(), genSaltSync(saltRounds)))
       }
@@ -54,31 +51,27 @@ module.exports = (sequelize, DataTypes) => {
     otpExpire: {
       type: DataTypes.DATE,
       trim: true,
-      allowNull: false
+      allowNull: true
     },
     country: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "country is required" } }
+      allowNull: true
     },
     city: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "city is required" } }
+      allowNull: true     
     },
     address: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "address is required" } }
+      allowNull: true
     },
     avatar: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "avatar is required" } }
+      allowNull: true
     },
     verify: {
       type: DataTypes.BOOLEAN,
@@ -86,7 +79,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'User',
+    modelName: 'User'
   });
   return User;
 };
