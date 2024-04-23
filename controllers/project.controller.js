@@ -1,5 +1,4 @@
 const { Project, User, Permission, Role, ProjectMember } = require("../models");
-const { QueryTypes } = require('sequelize');
 const _ = require("lodash");
 const { sendInvitePeople } = require("../utils/nodemailer");
 const { generateOTP } = require("../utils/randomNo");
@@ -101,7 +100,6 @@ async function getAllProject(req, res, next) {
 }
 
 async function projectViseMember(req,res,next) {
-    console.log("======",req.params)
     try {
         const data = await ProjectMember.findAll({
             include: [

@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 async function getRole(rolename, permission) {
     return async (req, res, next) => {
         const data = await Role.findAll({
-            attributes: ["name"],
+            attributes: ["id","name"],
             include: [
                 {
                     model: Permission,

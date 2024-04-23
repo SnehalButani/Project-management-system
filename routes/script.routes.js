@@ -5,7 +5,7 @@ const { scriptValidate, editScriptValidate } = require('../validations/script.va
 const { checkRole, checkPermission } = require('../middlewares/checkPermission');
 const router = express.Router();
 
-router.get("/allscript",verifyjwt,getAllScript);
+router.get("/allscript", verifyjwt, checkPermission('select'), getAllScript);
 router.post("/addscript", verifyjwt, scriptValidate, checkPermission('insert'), addScript);
 router.put("/editscript", verifyjwt, editScriptValidate, checkPermission('update'), editScript);
 router.delete("/rmscript", verifyjwt, checkPermission('delete'), removeScript);
