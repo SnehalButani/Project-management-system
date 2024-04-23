@@ -1,44 +1,39 @@
-const { sequelize } = require("../models");
+const { saltRounds } = require("../config/config");
+const {  Role, Permission } = require("../models");
+const bcrypt = require('bcrypt');
 
 async function getRole(rolename, permission) {
     return async (req, res, next) => {
-        const data = await sequelize.query(`
-            SELECT r.name, p.permission
-            FROM "RolePermission"
-            JOIN "Roles" AS r ON "RolePermission"."RoleId" = r.id
-            JOIN "Permissions" AS p ON "RolePermission"."PermissionId" = p.id where r.id = ${rolename}`);
-
-        const roles = {};
-
-        data[0].forEach(entry => {
-            if (!roles[entry.name]) {
-                roles[entry.name] = { name: entry.name, permissions: [entry.permission] };
-            } else {
-                roles[entry.name].permissions.push(entry.permission);
+        const data = await Role.findAll({
+            attributes: ["name"],
+            include: [
+                {
+                    model: Permission,
+                    attributes: ['permission']
+                }
+            ],
+            where: {
+                id: rolename
             }
         });
 
-        const rolesArray = Object.values(roles);
+        const jsonData = data.map(instance => instance.toJSON());
+
+        const permissions = jsonData[0].Permissions.map(permission => permission.permission);
 
         if (permission) {
-            return rolesArray.some(role => role.permissions.includes(permission));
+            console.log("if")
+            return permissions.includes(permission);
         } else {
-            return rolesArray.some(role => role.name === rolename);
+            console.log("else")
+            return jsonData.some(role => (role.name === 'owner'));
         }
     }
 }
 
-
-function reduceData(data) {
-    return Object.values(data.reduce((acc, curr) => {
-        const key = `${curr.firstName}_${curr.lastName}_${curr.role}`;
-        if (!acc[key]) {
-            acc[key] = { firstName: curr.firstName, lastName: curr.lastName, role: curr.role, permission: [curr.permission] };
-        } else {
-            acc[key].permission.push(curr.permission);
-        }
-        return acc;
-    }, {}));
+function hashPassword(password) {
+    const hashedPassword = bcrypt.hashSync(password, saltRounds);
+    return hashedPassword;
 }
 
-module.exports = { getRole, reduceData }
+module.exports = { getRole, hashPassword }

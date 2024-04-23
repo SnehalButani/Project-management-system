@@ -53,9 +53,7 @@ async function removeScript(req, res, next) {
 
 async function getAllScript(req, res, next) {
     try {
-        const data = await sequelize.query(`SELECT * FROM "Scripts"`, {
-            type: QueryTypes.SELECT
-        });
+        const data = await Script.findAll();
 
         res.status(200).json({
             error: false,

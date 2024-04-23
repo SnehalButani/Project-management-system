@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    return queryInterface.bulkInsert('RolePermission', [
+    return queryInterface.bulkInsert('RolePermissions', [
       {
         createdAt: new Date(),
         updatedAt: new Date(), PermissionId: 1, RoleId: 1
@@ -24,6 +24,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('RolePermission', null, {});
+    return queryInterface.bulkDelete('RolePermissions', null, {});
   }
 };

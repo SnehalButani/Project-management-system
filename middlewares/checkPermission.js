@@ -17,6 +17,7 @@ const checkRole = (role) => {
     return async (req, res, next) => {
         const userRole = req.user ? req.user.role : null;
         const checkRole = await getRole(userRole);
+       
         if (await checkRole()) {
             return next();
         } else {

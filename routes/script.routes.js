@@ -6,8 +6,8 @@ const { checkRole, checkPermission } = require('../middlewares/checkPermission')
 const router = express.Router();
 
 router.get("/allscript",verifyjwt,getAllScript);
-router.post("/addscript", verifyjwt, scriptValidate, checkPermission('create'), addScript);
-router.put("/editscript", verifyjwt, editScriptValidate, checkPermission('edit'), editScript);
+router.post("/addscript", verifyjwt, scriptValidate, checkPermission('insert'), addScript);
+router.put("/editscript", verifyjwt, editScriptValidate, checkPermission('update'), editScript);
 router.delete("/rmscript", verifyjwt, checkPermission('delete'), removeScript);
 
 module.exports = router;    

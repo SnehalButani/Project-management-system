@@ -1,16 +1,16 @@
-const { Project, User, Permission, sequelize,ProjectMember } = require("../models");
+const { Project, User, Permission, Role, ProjectMember } = require("../models");
 const { QueryTypes } = require('sequelize');
 const _ = require("lodash");
 const { sendInvitePeople } = require("../utils/nodemailer");
 const { generateOTP } = require("../utils/randomNo");
-const { getFirstNameFromEmail } = require("../utils/helper");
 
 module.exports = {
     addProject,
     editProject,
     removeProject,
     invitePeople,
-    getAllProject
+    getAllProject,
+    projectViseMember
 }
 
 async function addProject(req, res, next) {
@@ -47,7 +47,7 @@ async function editProject(req, res, next) {
 
 async function removeProject(req, res, next) {
     try {
-        const removeproject = await Project.destroy({ where: { id: req.body.id } });
+        const data = await Project.destroy({ where: { id: req.body.id } });
 
         res.status(200).json({
             error: false,
@@ -66,10 +66,9 @@ async function invitePeople(req, res, next) {
 
         const password = generateOTP();
 
-
         const user = await User.create({ email: email, password: password, role_id: roleId });
 
-        await ProjectMember.create({ ...req.body, userId: user.id });
+        await ProjectMember.create({ ...req.body, projectId: projectId, userId: user.id });
 
         await sendInvitePeople({ email, password }, res)
             .then(() => {
@@ -91,14 +90,59 @@ async function invitePeople(req, res, next) {
 
 async function getAllProject(req, res, next) {
     try {
-        const data = await sequelize.query(`SELECT * FROM "Projects"`, {
-            type: QueryTypes.SELECT
-        });
-
+        const data = await Project.findAll();
         res.status(200).json({
             error: false,
             data: data
         })
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function projectViseMember(req,res,next) {
+    console.log("======",req.params)
+    try {
+        const data = await ProjectMember.findAll({
+            include: [
+                {
+                    model: Project,
+                    attributes: ["Pro_name"]
+                },
+                {
+                    model: User,
+                    attributes: ["firstName", "lastName"]
+                },
+                {
+                    model: Role,
+                    attributes: ['name'],
+                    include: [
+                        {
+                            model: Permission,
+                            attributes: ["permission"]
+                        }
+                    ]
+                }
+            ],
+            attributes: [],
+            where:{
+                projectId: req.params.projectId
+            }
+        });
+
+        const jsonData = data.map(instance => instance.toJSON());
+
+        const finalData = jsonData.map(ele => {
+            return {
+                firstName: ele.User.firstName,
+                lastName: ele.User.lastName,
+                role: ele.Role.name,
+                projectName: ele.Project.Pro_name,
+                permission: ele.Role.Permissions.map(per => per.permission)
+            }
+        })
+
+        res.status(200).json({ error: false, data: finalData })
     } catch (error) {
         next(error)
     }

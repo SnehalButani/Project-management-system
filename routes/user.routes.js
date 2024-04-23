@@ -9,10 +9,10 @@ const router = express.Router();
 
 router.get("/getpermissionviserole", verifyjwt, getPermissionViseRole);
 router.get("/getuservisepermission", verifyjwt, getUservisePermission);
-router.get("/getallprojectvisemember",verifyjwt,getAllProjectViseMember)
+router.get("/getallprojectvisemember", verifyjwt, getAllProjectViseMember)
 
 router.post("/signup", upload.fields([{ name: 'avatar', maxCount: 1 }]), signUpvalidation, signUp);
-router.post("/createrole", verifyjwt,checkRole('owner'), createRole);
+router.post("/createrole", verifyjwt, checkRole('owner'), createRole);
 router.post("/signin", signInvalidation, signIn);
 router.post("/verifyotp", verifyOtp);
 

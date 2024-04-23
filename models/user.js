@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: { notNull: { msg: "password is required" } },
       set(value) {
-        this.setDataValue('password', hashSync(value.toString(), genSaltSync(12)));
+        this.setDataValue('password', hashSync(value.toString(), genSaltSync(saltRounds)));
       }
     },
     otp: {

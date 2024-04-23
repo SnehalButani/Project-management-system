@@ -1,12 +1,12 @@
-const { User, Role, Permission, sequelize } = require("../models");
+const { User, Role, Permission, ProjectMember, Project } = require("../models");
 const { jwtToken } = require('../utils/jwtTokenHandler');
 const { sendOTPVerificationEmail } = require("../utils/nodemailer");
 const _ = require("lodash");
 const { generateOTP } = require("../utils/randomNo");
 const { compare } = require("bcrypt");
 const fs = require("fs");
-const { QueryTypes } = require('sequelize');
-const { reduceData } = require("../utils/helper");
+
+
 
 
 
@@ -177,11 +177,8 @@ async function createRole(req, res, next) {
             const permission = await Permission.findByPk(permissionId);
             if (!permission) {
                 console.log("Permission not found");
-                // Handle error or skip this permission
                 continue;
             }
-
-            // Associate the permission with the role
             await permission.addRole(role);
         }
 
@@ -198,27 +195,27 @@ async function createRole(req, res, next) {
 
 async function getPermissionViseRole(req, res, next) {
     try {
-        const data = await sequelize.query(`
-        SELECT r.name, p.permission
-        FROM "RolePermission"
-        JOIN "Roles" AS r ON "RolePermission"."RoleId" = r.id
-        JOIN "Permissions" AS p ON "RolePermission"."PermissionId" = p.id`);
+        const data = await Role.findAll({
+            attributes: ["name"],
+            include: [
+                {
+                    model: Permission,
+                    attributes: ['permission']
+                }
+            ]
+        });
 
-        const roles = {};
-
-        data[0].forEach(entry => {
-            if (!roles[entry.name]) {
-                roles[entry.name] = { name: entry.name, permissions: [entry.permission] };
-            } else {
-                roles[entry.name].permissions.push(entry.permission);
+        const jsonData = data.map(instance => instance.toJSON());
+        const finalData = jsonData.map(ele => {
+            return {
+                name: ele.name,
+                permissions: ele.Permissions.map(per => per.permission)
             }
         });
 
-        const rolesArray = Object.values(roles);
-
         res.status(200).json({
             error: false,
-            data: rolesArray
+            data: finalData
         });
     } catch (error) {
         next(error)
@@ -227,17 +224,35 @@ async function getPermissionViseRole(req, res, next) {
 
 async function getUservisePermission(req, res, next) {
     try {
-        const data = await sequelize.query(`
-        SELECT u."firstName", u."lastName",r.name AS role,p.permission FROM "Users" as u JOIN "Roles" as r ON r.id = u.role_id 
-        JOIN "RolePermission" ON "RolePermission"."RoleId" = r.id JOIN "Permissions" AS p ON "RolePermission"."PermissionId" = p.id`, {
-            type: QueryTypes.SELECT
+        const data = await User.findAll({
+            include: [
+                {
+                    model: Role,
+                    as: 'role',
+                    attributes: ['name'],
+                    include: [
+                        {
+                            model: Permission,
+                            attributes: ['permission']
+                        }
+                    ]
+                }
+            ],
+            attributes: ['firstName', 'lastName']
         });
 
-        const combinedData = reduceData(data)
+        const jsonData = data.map(instance => instance.toJSON());
+        const finalData = jsonData.map(ele => {
+            return {
+                ...ele,
+                role: ele.role.name,
+                permission: ele.role.Permissions.map(per => per.permission)
+            }
+        })
 
         res.status(200).json({
             error: false,
-            data: combinedData
+            data: finalData
         })
     } catch (error) {
         next(error)
@@ -246,21 +261,43 @@ async function getUservisePermission(req, res, next) {
 
 async function getAllProjectViseMember(req, res, next) {
     try {
-        const data = await sequelize.query(`SELECT u."firstName", u."lastName", r.name AS role, p.permission
-        FROM "Users" AS u
-        JOIN "ProjectMembers" AS pm ON pm."userId" = u.id
-        JOIN "Roles" AS r ON pm."roleId" = r.id
-        JOIN "RolePermission" ON "RolePermission"."RoleId" = r.id 
-        JOIN "Permissions" AS p ON "RolePermission"."PermissionId" = p.id`, {
-            type: QueryTypes.SELECT
-        });
-
-        const combinedData = reduceData(data)
-
-        res.status(200).json({
-            error: false,
-            data: combinedData
+        const data = await ProjectMember.findAll({
+            include: [
+                {
+                    model: Project,
+                    attributes: ["Pro_name"]
+                },
+                {
+                    model: User,
+                    attributes: ["firstName", "lastName"]
+                },
+                {
+                    model: Role,
+                    attributes: ['name'],
+                    include: [
+                        {
+                            model: Permission,
+                            attributes: ["permission"]
+                        }
+                    ]
+                }
+            ],
+            attributes: []
         })
+
+        const jsonData = data.map(instance => instance.toJSON());
+
+        const finalData = jsonData.map(ele => {
+            return {
+                firstName: ele.User.firstName,
+                lastName: ele.User.lastName,
+                role: ele.Role.name,
+                projectName: ele.Project.Pro_name,
+                permission: ele.Role.Permissions.map(per => per.permission)
+            }
+        })
+
+        res.status(200).json({ error: false, data: finalData })
     } catch (error) {
         next(error)
     }
