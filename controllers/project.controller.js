@@ -1,7 +1,7 @@
 const { Project, User, Permission, Role, ProjectMember } = require("../models");
 const _ = require("lodash");
 const { sendInvitePeople } = require("../utils/nodemailer");
-const { generateOTP } = require("../utils/randomNo");
+const { generatePassword } = require("../utils/helper");
 
 module.exports = {
     addProject,
@@ -63,7 +63,7 @@ async function invitePeople(req, res, next) {
 
         const { email, roleId, projectId } = req.body;
 
-        const password = generateOTP();
+        const password = generatePassword();
 
         const user = await User.create({ email: email, password: password, role_id: roleId });
 

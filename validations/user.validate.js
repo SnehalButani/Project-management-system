@@ -68,7 +68,15 @@ const signInvalidation = [
     body('password', 'password does not Empty').notEmpty(),
 ]
 
+const verifyValidation = [
+    body('email', 'email is required').notEmpty(),
+    body('email', 'Invalid email').isEmail().bail(),
+    body('otp', 'otp does not Empty').notEmpty(),
+]
+
+
 module.exports = {
     signUpvalidation: [signUpvalidation, chechSchemaRouter],
-    signInvalidation: [signInvalidation, chechSchemaRouter]
+    signInvalidation: [signInvalidation, chechSchemaRouter],
+    verifyValidation: [verifyValidation, chechSchemaRouter]
 }
