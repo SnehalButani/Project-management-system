@@ -1,20 +1,25 @@
 require('dotenv').config();
+const router = require('./routes/main.js');
 const express = require("express");
 const app = express();
-const { userRouter } = require('./routes/main.js');
 const { sequelize } = require("./models");
 const { PORT } = require("./config/config.js");
+const bodyParser = require("body-parser");
+const path = require("path");
 
 
 
 sequelize.sync({ force: false })
-    .then(() => console.log("DB connected"))
-    .catch((error) => console.log("------------------ DB connection error ------------------", error));
+    .then(async () => {
+        console.log("DB connected");
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(userRouter);
-app.get("/", (req, res) => {res.status(200).send("Project Management System")})
+    }).catch((error) => console.log("------------------ DB connection error ------------------", error));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'uploads/images')));
+app.use("/", router);
+app.get("/", (req, res) => { res.status(200).send("Project Management System") })
 
 
 

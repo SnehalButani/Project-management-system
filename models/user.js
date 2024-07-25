@@ -1,6 +1,6 @@
 const { Model } = require('sequelize');
-const {  hash } = require('bcrypt');
-const {saltRounds} = require('../config/config');
+const { hashSync, genSaltSync } = require('bcrypt');
+const { saltRounds } = require('../config/config');
 
 module.exports = (sequelize, DataTypes) => {
 
@@ -15,14 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     firstName: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "firstname is required" } }
+      allowNull: true
     },
     lastName: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "lastname is required" } }
+      allowNull:true
     },
     email: {
       type: DataTypes.STRING,
@@ -39,54 +37,49 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: { notNull: { msg: "password is required" } },
       set(value) {
-        this.setDataValue('password', hash(value));
+        this.setDataValue('password', hashSync(value.toString(), genSaltSync(saltRounds)));
       }
     },
     otp: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "password is required" } },
+      allowNull: true,
       set(value) {
-        this.setDataValue('otp', hash(value))
+        this.setDataValue('otp', hashSync(value.toString(), genSaltSync(saltRounds)))
       }
     },
     otpExpire: {
       type: DataTypes.DATE,
       trim: true,
-      allowNull: false
+      allowNull: true
     },
     country: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "country is required" } }
+      allowNull: true
     },
     city: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "city is required" } }
+      allowNull: true     
     },
     address: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "address is required" } }
+      allowNull: true
     },
     avatar: {
       type: DataTypes.STRING,
       trim: true,
-      allowNull: false,
-      validate: { notNull: { msg: "avatar is required" } }
+      allowNull: true
     },
     verify: {
       type: DataTypes.BOOLEAN,
-      defaultValue:false
+      defaultValue: false
     }
   }, {
     sequelize,
-    modelName: 'User',
+    modelName: 'User'
   });
   return User;
 };

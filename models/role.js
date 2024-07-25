@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class Role extends Model {
     static associate(models) {
       Role.hasOne(models.User, { as: 'role', foreignKey: 'role_id' })
+      Role.belongsToMany(models.Permission, { through: 'RolePermission' })
     }
   }
 
@@ -18,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Role',
+    timestamps:true,
     hooks: {
       beforeCreate: (role, options) => {
         role.createdAt = new Date();
